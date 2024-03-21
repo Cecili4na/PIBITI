@@ -1,17 +1,47 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import styles from './styles'; // Importe os estilos
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import styles from './styles';
 
-const ExibirGrafico = ({ route }) => {
-  const { dataTitle, temperatureData, humidityData } = route.params;
+const GerarGrafico = () => {
+  const navigation = useNavigation();
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [temperatureData, setTemperatureData] = useState([]);
+  const [humidityData, setHumidityData] = useState([]);
+
+  const handleGenerateChart = async () => {
+    try {
+      const dateKey = selectedDate.toLocaleDateString();
+      const data = await AsyncStorage.getItem(dateKey);
+      if (data !== null) {
+        const indicadores = JSON.parse(data);
+        const temperatureValues = indicadores.map(indicador => parseFloat(indicador.temperature));
+        const humidityValues = indicadores.map(indicador => parseFloat(indicador.humidity));
+        const times = indicadores.map(indicador => indicador.time);
+        setTemperatureData(temperatureValues);
+        setHumidityData(humidityValues);
+      } else {
+        console.log('Nenhum dado encontrado para a data selecionada.');
+      }
+    } catch (error) {
+      console.error('Erro ao obter os dados do AsyncStorage:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{dataTitle}</Text>
+      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+        <Text style={styles.dateText}>Selecionar Data: {selectedDate.toLocaleDateString()}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, styles.redButton]} onPress={handleGenerateChart}>
+        <Text style={styles.buttonText}>Gerar Gráfico</Text>
+      </TouchableOpacity>
       <LineChart
         data={{
-          labels: ['1', '2', '3', '4', '5', '6', '7'],
+          labels: times,
           datasets: [
             {
               data: temperatureData,
@@ -39,7 +69,6 @@ const ExibirGrafico = ({ route }) => {
           propsForDots: {
             r: '4',
             strokeWidth: '2',
-            stroke: '#ffa726',
           },
         }}
         bezier
@@ -48,4 +77,4 @@ const ExibirGrafico = ({ route }) => {
   );
 };
 
-export default ExibirGrafico;
+export default GerarGrafico;

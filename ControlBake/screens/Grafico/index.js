@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 
-const GerarGrafico = () => {
+const Grafico = () => {
   const navigation = useNavigation();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [temperatureData, setTemperatureData] = useState([]);
   const [humidityData, setHumidityData] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showZoneInput, setShowZoneInput] = useState(false);
-  const [zoneInput, setZoneInput] = useState('');
-  const [selectedZone, setSelectedZone] = useState(null);
 
   const handleGenerateChart = async () => {
     try {
@@ -41,16 +38,6 @@ const GerarGrafico = () => {
     setSelectedDate(currentDate);
   };
 
-  const handleSelectZone = () => {
-    setShowZoneInput(true);
-  };
-
-  const handleConfirmZone = () => {
-    setSelectedZone(zoneInput);
-    setShowZoneInput(false);
-    setZoneInput('');
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setShowDatePicker(true)}>
@@ -65,16 +52,11 @@ const GerarGrafico = () => {
           onChange={onDateChange}
         />
       )}
-      {selectedZone && (
-        <TouchableOpacity style={[styles.button, styles.redButton]} onPress={() => setSelectedZone(null)}>
-          <Text style={styles.buttonText}>Zona Selecionada: {selectedZone}</Text>
-        </TouchableOpacity>
-      )}
       {temperatureData.length > 0 && humidityData.length > 0 && (
         <View style={styles.chartContainer}>
           <LineChart
             data={{
-              labels: ['1', '2', '3', '4', '5', '6', '7'],
+              labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
               datasets: [
                 {
                   data: temperatureData,
@@ -108,33 +90,14 @@ const GerarGrafico = () => {
           />
         </View>
       )}
-      {!selectedZone && !showZoneInput && (
-        <TouchableOpacity style={[styles.button, styles.redButton]} onPress={handleSelectZone}>
-          <Text style={styles.buttonText}>Definir Zona</Text>
-        </TouchableOpacity>
-      )}
-      {showZoneInput && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={[styles.input, { backgroundColor: '#fff' }]}
-            onChangeText={text => setZoneInput(text)}
-            value={zoneInput}
-            placeholder="Digite a Zona"
-            keyboardType="numeric"
-          />
-          <TouchableOpacity style={[styles.button, styles.redButton]} onPress={handleConfirmZone}>
-            <Text style={styles.buttonText}>Definir Zona</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      <TouchableOpacity style={[styles.button, styles.redButton]} onPress={handleGenerateChart}>
+      <TouchableOpacity style={styles.button} onPress={handleGenerateChart}>
         <Text style={styles.buttonText}>Gerar Gráfico</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.button, styles.redButton]}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.button}>
         <Text style={styles.buttonText}>Voltar</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default GerarGrafico;
+export default Grafico;
