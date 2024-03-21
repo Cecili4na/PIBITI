@@ -1,35 +1,46 @@
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: width * 0.1, // Utilizando uma porcentagem da largura da tela para o espaçamento horizontal
+    padding: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
   },
   dateText: {
-    marginBottom: height * 0.02, // Utilizando uma porcentagem da altura da tela para o espaçamento vertical
+    marginBottom: 10,
+    fontSize: 16,
+    color: '#000',
   },
   input: {
-    marginBottom: height * 0.01, // Utilizando uma porcentagem da altura da tela para o espaçamento vertical
-    paddingHorizontal: width * 0.05, // Utilizando uma porcentagem da largura da tela para o padding horizontal
-    paddingVertical: height * 0.015, // Utilizando uma porcentagem da altura da tela para o padding vertical
-    borderColor: 'gray',
+    width: '100%',
+    height: 40,
+    backgroundColor: '#d3d3d3',
+    marginBottom: 10,
+    paddingHorizontal: 10,
     borderWidth: 1,
-    width: width * 0.8, // Utilizando uma porcentagem da largura da tela para o tamanho do componente
+    borderColor: '#ccc',
     borderRadius: 5,
+    color: '#000', // Alterada para preto
+    fontSize: 16,
   },
   button: {
-    backgroundColor: '#007bff',
-    padding: width * 0.04, // Utilizando uma porcentagem da largura da tela para o padding do botão
+    width: '50%',
+    height: 20,
+    backgroundColor: '#d32f2f',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 5,
-    marginTop: height * 0.03, // Utilizando uma porcentagem da altura da tela para o espaçamento vertical
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: '#000', // Alterada para preto
+    fontSize: 14,
   },
 });
 
