@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 
-const Grafico = () => {
+const GerarGrafico = () => {
   const navigation = useNavigation();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,20 +18,30 @@ const Grafico = () => {
     try {
       const dateKey = selectedDate.toLocaleDateString();
       console.log('Date Key:', dateKey); // Adiciona log para verificar a chave de data
-      const data = await AsyncStorage.getAllKeys();
-      const indicadores = await AsyncStorage.multiGet(data.filter(key => key.startsWith('indicadores_')));
-      console.log('Indicadores:', indicadores); // Adiciona log para verificar os indicadores obtidos
-      const temperatureValues = indicadores.map(([key, value]) => JSON.parse(value).temperature);
-      const humidityValues = indicadores.map(([key, value]) => JSON.parse(value).humidity);
-      console.log('Temperature Data:', temperatureValues); // Adiciona log para verificar os dados de temperatura
-      console.log('Humidity Data:', humidityValues); // Adiciona log para verificar os dados de umidade
-      setTemperatureData(temperatureValues);
-      setHumidityData(humidityValues);
+      const data = await AsyncStorage.getItem('indicadores');
+      console.log('Data from AsyncStorage:', data); // Adiciona log para verificar os dados obtidos do AsyncStorage
+      if (data !== null) {
+        const parsedData = JSON.parse(data);
+        const indicadores = parsedData.filter(item => {
+          const itemDate = new Date(item.year, item.month - 1, item.day); // Cria uma data a partir dos dados do indicador
+          return itemDate.toLocaleDateString() === dateKey; // Retorna true se a data do indicador corresponder à data selecionada
+        });
+        console.log('Indicadores:', indicadores); // Adiciona log para verificar os indicadores obtidos
+        const temperatureValues = indicadores.map(indicador => parseFloat(indicador.temperature));
+        const humidityValues = indicadores.map(indicador => parseFloat(indicador.humidity));
+        console.log('Temperature Data:', temperatureValues); // Adiciona log para verificar os dados de temperatura
+        console.log('Humidity Data:', humidityValues); // Adiciona log para verificar os dados de umidade
+        setTemperatureData(temperatureValues);
+        setHumidityData(humidityValues);
+      } else {
+        console.log('Nenhum dado encontrado para a data selecionada.');
+        setTemperatureData([]);
+        setHumidityData([]);
+      }
     } catch (error) {
       console.error('Erro ao obter os dados do AsyncStorage:', error);
     }
   };
-  
 
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || selectedDate;
@@ -53,6 +63,9 @@ const Grafico = () => {
           onChange={onDateChange}
         />
       )}
+      <TouchableOpacity style={[styles.button, styles.redButton]} onPress={handleGenerateChart}>
+        <Text style={styles.buttonText}>Gerar Gráfico</Text>
+      </TouchableOpacity>
       {temperatureData.length > 0 && humidityData.length > 0 && (
         <View style={styles.chartContainer}>
           <LineChart
@@ -91,14 +104,8 @@ const Grafico = () => {
           />
         </View>
       )}
-      <TouchableOpacity style={styles.button} onPress={handleGenerateChart}>
-        <Text style={styles.buttonText}>Gerar Gráfico</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.button}>
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
     </View>
   );
 };
 
-export default Grafico;
+export default GerarGrafico;

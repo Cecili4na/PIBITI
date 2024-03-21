@@ -17,6 +17,7 @@ const CadastraIndicadores = () => {
   const handleSave = async () => {
     try {
       const newRecord = {
+        id: Date.now(), // Identificador único para cada registro
         day: selectedDate.getDate(),
         month: selectedDate.getMonth() + 1,
         year: selectedDate.getFullYear(),
@@ -24,16 +25,16 @@ const CadastraIndicadores = () => {
         temperature: temperature,
         humidity: humidity,
       };
-
+  
       const existingRecords = await AsyncStorage.getItem('indicadores');
       const existingRecordsArray = existingRecords ? JSON.parse(existingRecords) : [];
-
+  
       existingRecordsArray.push(newRecord);
-
-      await AsyncStorage.setItem('indicadores', JSON.stringify(existingRecordsArray));
-
+  
+      await AsyncStorage.setItem(`indicadores_${newRecord.id}`, JSON.stringify(newRecord));
+  
       console.log('Registro salvo com sucesso:', newRecord);
-
+  
       setSelectedDate(new Date());
       setTemperature('');
       setHumidity('');
@@ -41,6 +42,7 @@ const CadastraIndicadores = () => {
       console.error('Erro ao salvar o registro:', error);
     }
   };
+  
 
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || selectedDate;
@@ -55,7 +57,7 @@ const CadastraIndicadores = () => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -200}
     >
       <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-        <Text style={[styles.dateText, { marginBottom: 20 }]}>Selecionar Data e Hora: {selectedDate.toLocaleString()}</Text>
+      <Text style={[styles.dateText, { marginBottom: 20 }]}>Selecionar Data e Hora: {selectedDate.toLocaleString()}</Text>
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
