@@ -43,7 +43,7 @@ const Indicadores = () => {
         data={indicadores}
         renderItem={renderItem}
         keyExtractor={item => item.id}
-        ListEmptyComponent={() => <Text>Nenhum indicador encontrado</Text>}
+        ListEmptyComponent={() => <Text>Nenhum  encontrado</Text>}
       />
     </View>
   );
